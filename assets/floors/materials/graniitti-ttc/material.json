@@ -1,0 +1,22 @@
+{
+  "name": "Harmaa graniitti 60×60, vaaleat saumat",
+  "tile_w": 0.6,
+  "tile_h": 0.6,
+  "bond": 0.0,
+  "rotate_tiles": true,
+  "tex_m": 0.7,
+  "saturation": 0.08,
+  "contrast": 1.35,
+  "brightness": 170,
+  "grout_w": 0.006,
+  "grout_tone": 1.45,
+  "tile_variation": 0.04,
+  "roughness": 0.22,
+  "rough_influence": 0.3,
+  "gloss": 0.8,
+  "normal_strength": 0.15,
+  "car_reflection": 1.6,
+  "reflection_blur_px": 5,
+  "light_intensity": 5500,
+  "source": "ambientCG Granite001A (CC0)"
+}

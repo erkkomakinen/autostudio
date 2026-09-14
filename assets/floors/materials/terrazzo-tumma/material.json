@@ -1,0 +1,22 @@
+{
+  "name": "Tumma terrazzo 60×60",
+  "tile_w": 0.6,
+  "tile_h": 0.6,
+  "bond": 0.0,
+  "rotate_tiles": true,
+  "tex_m": 0.45,
+  "saturation": 0.3,
+  "contrast": 1.0,
+  "brightness": 85,
+  "grout_w": 0.004,
+  "grout_tone": 0.5,
+  "tile_variation": 0.03,
+  "roughness": 0.15,
+  "rough_influence": 0.25,
+  "gloss": 0.9,
+  "normal_strength": 0.1,
+  "car_reflection": 0.9,
+  "reflection_blur_px": 3,
+  "light_intensity": 6500,
+  "source": "ambientCG Terrazzo003 (CC0)"
+}

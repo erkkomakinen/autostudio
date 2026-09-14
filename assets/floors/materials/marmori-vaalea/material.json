@@ -1,0 +1,22 @@
+{
+  "name": "Vaalea kiillotettu marmori 120×60",
+  "tile_w": 1.2,
+  "tile_h": 0.6,
+  "bond": 0.5,
+  "rotate_tiles": false,
+  "tex_m": 1.2,
+  "saturation": 0.4,
+  "contrast": 0.9,
+  "brightness": 175,
+  "grout_w": 0.003,
+  "grout_tone": 0.55,
+  "tile_variation": 0.02,
+  "roughness": 0.08,
+  "rough_influence": 0.2,
+  "gloss": 0.95,
+  "normal_strength": 0.05,
+  "car_reflection": 1.0,
+  "reflection_blur_px": 2,
+  "light_intensity": 6500,
+  "source": "ambientCG Marble012 (CC0)"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Harmaa graniittilaatta 60×60",
+  "tile_w": 0.6,
+  "tile_h": 0.6,
+  "bond": 0.0,
+  "rotate_tiles": true,
+  "tex_m": 0.7,
+  "saturation": 0.15,
+  "contrast": 1.4,
+  "brightness": 150,
+  "grout_w": 0.005,
+  "grout_tone": 0.35,
+  "tile_variation": 0.04,
+  "roughness": 0.3,
+  "rough_influence": 0.3,
+  "gloss": 0.7,
+  "normal_strength": 0.15,
+  "car_reflection": 0.5,
+  "reflection_blur_px": 5,
+  "light_intensity": 5000,
+  "source": "ambientCG Granite001A (CC0)"
+}

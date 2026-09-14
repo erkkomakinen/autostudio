@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0d0e10">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kuvat">
+    <meta name="robots" content="noindex">
+    <title>Kuvat</title>
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    <script>
+        // Kotinäyttösovellus: liikekohtainen manifesti linkin tunnisteella
+        (function () {
+            var link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = '/d/' + location.pathname.split('/')[2] + '/manifest.webmanifest';
+            document.head.appendChild(link);
+        })();
+    </script>
+    <link rel="stylesheet" href="/static/dealer.css">
+</head>
+<body>
+    <header class="top">
+        <button type="button" id="back" class="back" hidden>‹ Autot</button>
+        <img id="logo" alt="" hidden>
+        <span id="dealerName"></span>
+    </header>
+
+    <main>
+        <div id="upload" class="upload" hidden>
+            <div class="bar"><span id="uploadBar"></span></div>
+            <p id="uploadText"></p>
+        </div>
+
+        <section id="home" class="screen" hidden>
+            <button type="button" id="newCar" class="pick-button">
+                <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+                Uusi auto
+            </button>
+            <button type="button" id="openGuide" class="link-btn">Näin kuvaat autot parhaiten</button>
+            <h2 class="section-title">Autot</h2>
+            <div id="cars" class="cars"></div>
+            <p id="noCars" class="empty" hidden>Ei vielä autoja. Aloita painamalla Uusi auto.</p>
+        </section>
+
+        <section id="batch" class="screen" hidden>
+            <div class="batch-head">
+                <div class="title-row">
+                    <h1 id="batchTitle"></h1>
+                    <button type="button" id="rename" class="link-btn">Nimeä</button>
+                </div>
+                <div class="progress">
+                    <div class="bar"><span id="progressBar"></span></div>
+                    <span id="progressText"></span>
+                </div>
+            </div>
+            <div id="gallery" class="gallery" aria-live="polite"></div>
+            <label class="btn add-more" for="moreFiles">＋ Lisää kuvia tähän autoon</label>
+            <input id="moreFiles" type="file" accept="image/*" multiple hidden>
+        </section>
+    </main>
+
+    <footer id="saveBar" class="save-bar" hidden>
+        <span id="saveText"></span>
+        <button type="button" id="saveAll" class="btn primary">Tallenna kaikki</button>
+    </footer>
+
+    <dialog id="newCarSheet" class="sheet" aria-labelledby="newCarTitle">
+        <form class="sheet-inner" method="dialog">
+            <div class="sheet-head">
+                <h2 id="newCarTitle">Uusi auto</h2>
+                <button type="button" class="close" data-close aria-label="Sulje">×</button>
+            </div>
+            <label for="carName" class="label">Auton nimi (vapaaehtoinen)</label>
+            <input id="carName" type="text" maxlength="80" placeholder="Esim. Audi A4 OVK-766" autocomplete="off">
+            <label class="btn primary" for="files">Valitse kuvat</label>
+            <input id="files" type="file" accept="image/*" multiple hidden>
+            <p class="sheet-hint">Voit valita kerralla kaikki auton kuvat. Sisäkuvat jätetään ennalleen.</p>
+        </form>
+    </dialog>
+
+    <dialog id="renameSheet" class="sheet" aria-labelledby="renameTitle">
+        <form id="renameForm" class="sheet-inner" method="dialog">
+            <div class="sheet-head">
+                <h2 id="renameTitle">Nimeä auto</h2>
+                <button type="button" class="close" data-close aria-label="Sulje">×</button>
+            </div>
+            <label for="renameInput" class="label">Auton nimi</label>
+            <input id="renameInput" type="text" maxlength="80" required autocomplete="off">
+            <button type="submit" class="btn primary">Tallenna</button>
+        </form>
+    </dialog>
+
+    <dialog id="fix" class="sheet" aria-labelledby="fixTitle">
+        <form id="fixForm" class="sheet-inner" method="dialog">
+            <div class="sheet-head">
+                <h2 id="fixTitle">Korjaa kuva</h2>
+                <button type="button" class="close" data-close aria-label="Sulje">×</button>
+            </div>
+            <img id="fixImg" class="sheet-img" alt="">
+            <p class="sheet-hint">Kerro lyhyesti, mikä kuvassa on vialla. Kuva tehdään uudelleen ja palveluntarjoaja saa tiedon.</p>
+            <div id="fixChips" class="chips"></div>
+            <label for="fixText" class="sr-only">Mikä kuvassa on vialla?</label>
+            <textarea id="fixText" rows="3" maxlength="500" placeholder="Esim. lattia näyttää oudolta auton vasemmalla puolella"></textarea>
+            <button type="submit" id="fixSend" class="btn primary">Tee kuva uudelleen</button>
+            <button type="button" id="fixOriginal" class="btn quiet">Käytä alkuperäistä kuvaa</button>
+        </form>
+    </dialog>
+
+    <dialog id="guide" class="sheet" aria-labelledby="guideTitle">
+        <div class="sheet-inner">
+            <div class="sheet-head">
+                <h2 id="guideTitle">Näin kuvaat autot parhaiten</h2>
+                <button type="button" class="close" data-close aria-label="Sulje">×</button>
+            </div>
+            <p class="sheet-hint">Kuvaa ulkokuvat tässä järjestyksessä. Koko auto kuvaan ja vähän tilaa ympärille.</p>
+            <ol class="guide-list">
+                <li><strong>Etuviisto</strong> vasemmasta etukulmasta</li>
+                <li><strong>Suoraan sivulta</strong></li>
+                <li><strong>Takaviisto</strong> vasemmasta takakulmasta</li>
+                <li><strong>Suoraan takaa</strong></li>
+                <li><strong>Takaviisto</strong> oikeasta takakulmasta</li>
+                <li><strong>Suoraan edestä</strong></li>
+                <li><strong>Sisäkuvat</strong>: kuljettajan paikka, mittaristo, takapenkki, tavaratila</li>
+            </ol>
+            <ul class="tips">
+                <li>Pidä puhelin vaakatasossa noin auton keskikorkeudella.</li>
+                <li>Kuvaa suoraan, älä ylä- tai alaviistosta.</li>
+                <li>Vältä vastavaloa ja pyyhi kameran linssi.</li>
+                <li>Renkaat kannattaa kääntää suoraan.</li>
+            </ul>
+            <button type="button" class="btn primary" data-close>Selvä</button>
+        </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" hidden></div>
+
+    <script src="/static/dealer.js"></script>
+</body>
+</html>

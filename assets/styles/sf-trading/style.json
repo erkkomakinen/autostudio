@@ -1,0 +1,39 @@
+{
+  "name": "SF Trading",
+  "model": "google/gemini-3.1-flash-image",
+  "canvas": [
+    1440,
+    1080
+  ],
+  "car_width": 0.84,
+  "car_height": 0.58,
+  "floor_y": 0.88,
+  "floor_sample": "lattia.jpg",
+  "wall_sample": "seina.jpg",
+  "floor_description": "polished grey granite with fine salt-and-pepper speckle, polished to a soft gloss with soft natural reflections",
+  "grout_description": "thin light grey grout lines",
+  "wall_description": "very dark charcoal with a subtle soft gradient",
+  "tile_size_m": 0.6,
+  "wall_brightness": 20,
+  "floor_brightness": 106,
+  "shadow_reach": 0.12,
+  "logo": "logo.png",
+  "logo_width": 0.32,
+  "logo_y": 0.11,
+  "guide_mode": "base",
+  "base_material": "sf-trading-ai-graniitti",
+  "base_wall_brightness": 24,
+  "base_shadow": 0.55,
+  "finish_floor_sample": "viimeistely-lattia.jpg",
+  "finish_wall_sample": "viimeistely-seina.jpg",
+  "wall_texture_sample": "seina-tekstuuri.png",
+  "wall_glow": 0.7,
+  "wall_uplight": 0.35,
+  "wall_vignette": 0.35,
+  "wall_texture": 0.08,
+  "wall_tone": [
+    1.0,
+    1.0,
+    1.0
+  ]
+}

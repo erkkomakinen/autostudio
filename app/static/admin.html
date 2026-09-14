@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d0e10">
+    <meta name="robots" content="noindex">
+    <title>Autostudio · Ylläpito</title>
+    <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#/">Autostudio</a>
+        <nav class="nav" aria-label="Päävalikko">
+            <a href="#/" data-nav="overview">Yleiskatsaus</a>
+            <a href="#/palautteet" data-nav="feedback">Palautteet <span id="feedbackBadge" class="count" hidden></span></a>
+            <a href="#/tyylit" data-nav="styles">Tyylit</a>
+            <a href="#/asetukset" data-nav="settings">Asetukset</a>
+        </nav>
+    </header>
+    <main id="view" class="view" aria-live="polite"></main>
+    <dialog id="viewer" class="viewer" aria-label="Kuva suurennettuna">
+        <div class="viewer-bar">
+            <div class="segmented" role="group" aria-label="Näytä">
+                <button type="button" data-kind="output" aria-pressed="true">Valmis</button>
+                <button type="button" data-kind="original" aria-pressed="false">Alkuperäinen</button>
+            </div>
+            <button type="button" class="icon-btn" id="viewerClose" aria-label="Sulje">×</button>
+        </div>
+        <img id="viewerImg" alt="">
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <script src="/static/admin.js"></script>
+</body>
+</html>

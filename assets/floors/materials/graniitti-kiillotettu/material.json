@@ -1,0 +1,22 @@
+{
+  "name": "Kiillotettu harmaa graniitti 80×80",
+  "tile_w": 0.8,
+  "tile_h": 0.8,
+  "bond": 0.0,
+  "rotate_tiles": true,
+  "tex_m": 1.0,
+  "saturation": 0.1,
+  "contrast": 1.1,
+  "brightness": 160,
+  "grout_w": 0.005,
+  "grout_tone": 1.35,
+  "tile_variation": 0.03,
+  "roughness": 0.1,
+  "rough_influence": 0.2,
+  "gloss": 0.95,
+  "normal_strength": 0.08,
+  "car_reflection": 1.0,
+  "reflection_blur_px": 2,
+  "light_intensity": 7000,
+  "source": "ambientCG Granite003A (CC0)"
+}

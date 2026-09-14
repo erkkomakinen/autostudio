@@ -1,0 +1,11 @@
+.venv/
+models/
+data/
+__pycache__/
+*.pyc
+*.tmp
+.env
+
+# Asiakkaan tavaramerkki ja lisenssirajoitteinen valokuva: ei julkiseen repoon
+assets/styles/sf-trading/logo.png
+assets/floors/betoni-valokuva.jpg

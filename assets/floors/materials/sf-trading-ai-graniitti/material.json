@@ -1,0 +1,23 @@
+{
+  "name": "SF Trading: tekoälyn generoima graniitti 60x60",
+  "tile_w": 0.6,
+  "tile_h": 0.6,
+  "bond": 0.0,
+  "rotate_tiles": true,
+  "tex_m": 0.4,
+  "saturation": 0.15,
+  "contrast": 1.3,
+  "brightness": 165,
+  "grout_w": 0.006,
+  "grout_tone": 1.45,
+  "tile_variation": 0.02,
+  "roughness": 0.22,
+  "rough_influence": 0.3,
+  "gloss": 0.0,
+  "normal_strength": 0.15,
+  "car_reflection": 0.35,
+  "reflection_blur_px": 6,
+  "light_intensity": 0,
+  "source": "Seedream 5 Pro -generoitu materiaalikuva",
+  "wash": 0.04
+}

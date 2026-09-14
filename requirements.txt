@@ -1,0 +1,19 @@
+# PyTorch asennetaan erikseen oikealla CUDA-versiolla, esim:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+transformers>=4.57,<5
+timm
+einops
+kornia
+pillow
+opencv-python-headless
+numpy
+huggingface_hub
+safetensors
+# 3D-studion kamera-arvio. Asennetaan ilman riippuvuuksia (tuo muuten opencv-pythonin headless-version rinnalle):
+#   pip install --no-deps git+https://github.com/cvg/GeoCalib.git
+# GeoCalib: koodi Apache 2.0, mallipainot CC BY 4.0 (vaatii maininnan, esim. palvelun tietosivulla)
+matplotlib
+pillow-heif
+fastapi
+uvicorn[standard]
+python-multipart
