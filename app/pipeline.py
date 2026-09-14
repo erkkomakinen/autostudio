@@ -25,6 +25,10 @@ from . import analysis, compose, notify, settings, storage
 from .imageutil import load_image
 
 log = logging.getLogger("autostudio.pipeline")
+class AiFailed(Exception):
+    """Tekoälykutsu epäonnistui korjauksessa, mutta kuvalla on jo valmis tulos, joka jätettiin ennalleen."""
+
+
 UPLOAD_MAX = 2400
 INTERIOR_MAX = 1600
 ALLOWED = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"}
@@ -172,6 +176,10 @@ def generate(job_id: str, name: str, extra_prompt: str | None = None):
         except Exception as e:  # noqa: BLE001 - kuva tehdään silti lasketulla pohjalla tai edellisellä raakakuvalla
             log.warning("Tekoälytausta epäonnistui (%s/%s): %s", job_id, name, e)
             info = {"error": str(e)[:300]}
+            if (adir / "ai.jpg").exists() and (storage.job_dir(job_id) / "output" / f"{name}.jpg").exists():
+                # Korjaus tai uudelleenteko: edellinen kuva säilyy sellaisenaan, ei turhaa samannäköistä versiota
+                storage.update_image(job_id, name, ai={**(img.get("ai") or {}), "error": info["error"]})
+                raise AiFailed("Tekoälytausta epäonnistui, edellinen kuva säilytettiin") from e
     _finish(job_id, name, style, src, adir, info)
 
 

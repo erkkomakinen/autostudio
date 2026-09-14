@@ -31,6 +31,11 @@ Kuva ──► 1. ANALYYSI (GPU, kerran per kuva)
 Tekoälyn raakakuva tallennetaan, joten seinän ja logon muutokset voi päivittää kaikkiin kuviin ilman
 uusia tekoälykutsuja. Jokaisesta tuloksesta jää versio talteen.
 
+Tyylin valinnat (tyylieditori → Auton sijoittelu ja laatat):
+- `tile_direction`: `car` = saumat pyörien suuntaan (oletus), `camera` = saumat aina kuvan suuntaisesti
+- `finish_prompt`: `locked` = valaistus lasketusta pohjasta (oletus), `realism` = tekoäly tekee kiiltävän
+  kiven heijastuksen ja kosketusvarjon (testattu 15.9.2026, selvästi aidompi etenkin suoraan edestä)
+
 ## Näkymät
 
 - **Asiakas** `/d/<linkki>`: autolista, uusi auto (nimi + kuvat), galleria, paina pohjassa = alkuperäinen,

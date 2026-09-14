@@ -18,6 +18,7 @@ from . import config, scene
 from .imageutil import cover, load_image, load_mask
 
 DEFAULT_SETTINGS = {
+    "material_overrides": {},  # tyylin realismitila: kiilto, heijastus ja kirkkaus materiaalin asetusten päälle
     "width": 1440,
     "height": 1080,
     "background": "",  # liikkeen oma taustakuva (tiedostonimi liikkeen kansiossa)

@@ -14,6 +14,7 @@ MODEL_IDS = {m["id"] for m in MODELS}
 DEFAULTS = {
     "usd_eur": 0.86,  # OpenRouter laskuttaa dollareina: kutsun hinta muunnetaan euroiksi tällä kurssilla
     "fallback_model": "bytedance-seed/seedream-5-0-pro",  # käytetään, jos tyylin malli ei vastaa
+    "contact": "",  # palveluntarjoajan yhteystiedot asiakkaille (kuvausohje, pois käytöstä -viesti)
 }
 _lock = threading.Lock()
 
@@ -42,6 +43,8 @@ def update(values: dict) -> dict:
         if model and model not in MODEL_IDS:
             raise ValueError("Tuntematon malli")
         current["fallback_model"] = model
+    if "contact" in values:
+        current["contact"] = str(values["contact"] or "").strip()[:200]
     with _lock:
         tmp = PATH.with_suffix(".tmp")
         tmp.write_text(json.dumps(current, indent=2), encoding="utf-8")

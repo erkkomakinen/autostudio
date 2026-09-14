@@ -40,7 +40,8 @@ const json = (method, data) => ({ method, headers: { 'Content-Type': 'applicatio
 let toastTimer;
 function toast(text, action) {
     const t = $('#toast');
-    t.replaceChildren(el('span', {}, text), action ? el('button', { type: 'button', class: 'toast-action', onclick: () => { t.hidden = true; action[1](); } }, action[0]) : null);
+    t.replaceChildren(el('span', {}, text));
+    if (action) t.append(el('button', { type: 'button', class: 'toast-action', onclick: () => { t.hidden = true; action[1](); } }, action[0]));
     t.hidden = false;
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { t.hidden = true; }, action ? 12000 : 4000);
@@ -65,6 +66,10 @@ async function init() {
     try {
         const dealer = await api('');
         document.title = `${dealer.name} · Kuvat`;
+        if (dealer.contact) {
+            $('#contact').textContent = `Kysyttävää tai ongelmia? Ota yhteyttä: ${dealer.contact}`;
+            $('#contact').hidden = false;
+        }
         $('#dealerName').textContent = dealer.name;
         if (dealer.logo) {
             const logo = $('#logo');
@@ -227,23 +232,23 @@ function card(img) {
     const processed = img.kind === 'car' && img.override !== 'other';
     const photo = el('img', { src: imageUrl(img, 'output'), alt: img.original_name, loading: 'lazy', draggable: 'false' });
     const badge = el('span', { class: 'badge', hidden: true }, 'Alkuperäinen');
-    const frame = el('div', { class: 'frame' }, photo, badge,
-        processed ? el('span', { class: 'hold-hint' }, 'Paina pohjassa: alkuperäinen') : null);
+    const hint = processed ? el('span', { class: 'hold-hint' }, 'Näytä alkuperäinen') : null;
+    const frame = processed
+        ? el('button', { type: 'button', class: 'frame toggle', 'aria-pressed': 'false', 'aria-label': 'Vaihda alkuperäisen ja käsitellyn kuvan välillä' }, photo, badge, hint)
+        : el('div', { class: 'frame' }, photo, badge);
 
     if (processed) {
-        const preload = new Image();
-        let timer;
-        const show = () => { photo.src = imageUrl(img, 'original'); badge.hidden = false; };
-        const hide = () => {
-            clearTimeout(timer);
-            if (!badge.hidden) { photo.src = imageUrl(img, 'output'); badge.hidden = true; }
-        };
-        frame.addEventListener('pointerdown', () => {
-            preload.src = imageUrl(img, 'original');
-            timer = setTimeout(show, 180);
+        // Napautus vaihtaa alkuperäiseen ja takaisin. Alkuperäinen ladataan etukäteen, kun kortti tulee näkyviin.
+        new IntersectionObserver((entries, obs) => {
+            if (entries.some((e) => e.isIntersecting)) { new Image().src = imageUrl(img, 'original'); obs.disconnect(); }
+        }, { rootMargin: '200px' }).observe(frame);
+        frame.addEventListener('click', () => {
+            const showOriginal = badge.hidden;
+            photo.src = imageUrl(img, showOriginal ? 'original' : 'output');
+            badge.hidden = !showOriginal;
+            hint.textContent = showOriginal ? 'Näytä käsitelty' : 'Näytä alkuperäinen';
+            frame.setAttribute('aria-pressed', String(showOriginal));
         });
-        ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => frame.addEventListener(ev, hide));
-        frame.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
     const second = img.kind === 'car' && img.override === 'other'
@@ -381,8 +386,23 @@ function post(url, form, onProgress) {
     });
 }
 
+// Sivulta poistuminen kesken lähetyksen katkaisisi sen: selain kysyy varmistuksen
+let uploading = 0;
+window.addEventListener('beforeunload', (e) => {
+    if (uploading > 0) { e.preventDefault(); e.returnValue = ''; }
+});
+
 async function uploadFiles(files, { title = '', jobId = null } = {}) {
     if (!files.length) return;
+    uploading += 1;
+    try {
+        await doUpload(files, { title, jobId });
+    } finally {
+        uploading -= 1;
+    }
+}
+
+async function doUpload(files, { title, jobId }) {
     const box = $('#upload');
     const bar = $('#uploadBar');
     const text = $('#uploadText');

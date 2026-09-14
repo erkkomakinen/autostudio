@@ -27,6 +27,7 @@ FLOATS = {
     "car_width": (0.4, 0.95), "car_height": (0.3, 0.8), "floor_y": (0.6, 0.97), "tile_size_m": (0.2, 1.5),
 }
 TEXTS = ("name", "floor_description")
+CHOICES = {"tile_direction": ("car", "camera"), "finish_prompt": ("locked", "realism")}
 FILES = ("logo.png", "viimeistely-lattia.jpg")
 
 
@@ -52,7 +53,9 @@ def _used_by(style_id: str) -> list[dict]:
 
 
 def _values(data: dict) -> dict:
-    return {k: data.get(k) for k in (*FLOATS, *TEXTS, "model")}
+    values = {k: data.get(k) for k in (*FLOATS, *TEXTS, "model")}
+    values.update({k: data.get(k) or options[0] for k, options in CHOICES.items()})
+    return values
 
 
 def _validate(values: dict) -> dict:
@@ -66,6 +69,11 @@ def _validate(values: dict) -> dict:
     for key in TEXTS:
         if key in values:
             clean[key] = str(values[key] or "").strip()[:300]
+    for key, options in CHOICES.items():
+        if key in values:
+            if values[key] not in options:
+                raise HTTPException(400, f"Virheellinen arvo: {key}")
+            clean[key] = values[key]
     if "model" in values:
         if values["model"] not in settings.MODEL_IDS:
             raise HTTPException(400, "Tuntematon malli")

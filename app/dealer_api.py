@@ -15,7 +15,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
 from . import ai_background as aib
-from . import notify, pipeline, storage, worker
+from . import notify, pipeline, settings, storage, worker
 
 STATIC = Path(__file__).parent / "static"
 router = APIRouter()
@@ -28,7 +28,9 @@ def _dealer(token: str) -> dict:
     if not dealer:
         raise HTTPException(404, "Linkki ei ole voimassa. Pyydä uusi linkki palveluntarjoajalta.")
     if not dealer.get("active", True):
-        raise HTTPException(403, "Palvelu ei ole tällä hetkellä käytössä. Ota yhteyttä palveluntarjoajaan.")
+        contact = settings.get().get("contact")
+        raise HTTPException(403, "Palvelu ei ole tällä hetkellä käytössä. "
+                                 + (f"Ota yhteyttä: {contact}" if contact else "Ota yhteyttä palveluntarjoajaan."))
     return dealer
 
 
@@ -106,7 +108,7 @@ def manifest(token: str):
 @router.get("/api/d/{token}")
 def dealer_info(token: str):
     dealer = _dealer(token)
-    return {"name": dealer["name"], "logo": _logo_path(dealer) is not None}
+    return {"name": dealer["name"], "logo": _logo_path(dealer) is not None, "contact": settings.get().get("contact") or ""}
 
 
 @router.get("/api/d/{token}/logo")

@@ -7,6 +7,7 @@ import calendar
 import os
 import re
 import secrets
+import threading
 from datetime import datetime
 from pathlib import Path
 
@@ -196,7 +197,7 @@ def company(dealer_id: str):
         })
     return {"company": _company_public(d), "months": months, "batches": batches,
             "open_feedback": sum(1 for f in fb if not f.get("handled")), "styles": _styles(),
-            "cap_used": pipeline.ai_images_this_month(d["id"])}
+            "cap_used": pipeline.ai_images_this_month(d["id"]), "skipped": len(_skipped_images(d["id"]))}
 
 
 def _styles() -> list[str]:
@@ -295,13 +296,39 @@ def batch_file(job_id: str, name: str, kind: str):
     return FileResponse(path, media_type="image/jpeg", headers={"Cache-Control": "private, max-age=31536000"})
 
 
+def _refinish_in_background(todo: list[tuple[str, str]]):
+    """Ilmainen viimeistely taustalla: iso erä ei aikakatkaise pyyntöä."""
+    def run():
+        for job_id, name in todo:
+            try:
+                pipeline.refinish(job_id, name)
+            except Exception:  # noqa: BLE001 - yksi epäonnistunut kuva ei pysäytä muita
+                pass
+
+    threading.Thread(target=run, daemon=True).start()
+
+
 @router.post("/batches/{job_id}/refinish")
-async def refinish_batch(job_id: str):
+def refinish_batch(job_id: str):
     job = _job(job_id)
-    for img in job["images"]:
-        if img["status"] == "done":
-            await run_in_threadpool(pipeline.refinish, job_id, img["name"])
-    return batch(job_id)
+    todo = [(job_id, i["name"]) for i in job["images"] if i["status"] == "done" and not i.get("deleted")]
+    _refinish_in_background(todo)
+    return {"queued": len(todo)}
+
+
+def _skipped_images(dealer_id: str) -> list[tuple[str, str]]:
+    return [(j["id"], i["name"]) for j in storage.list_jobs(dealer_id) for i in j["images"]
+            if (i.get("ai") or {}).get("skipped") and i["status"] in ("done", "error") and not i.get("deleted")]
+
+
+@router.post("/companies/{dealer_id}/redo-skipped")
+def redo_skipped(dealer_id: str):
+    """Kuvakaton takia ilman tekoälyä tehdyt kuvat uudelleen (esim. kun kattoa on nostettu)."""
+    d = _dealer(dealer_id)
+    todo = _skipped_images(d["id"])
+    for job_id, name in todo:
+        worker.enqueue_fix(job_id, name, None, None)
+    return {"queued": len(todo)}
 
 
 @router.post("/batches/{job_id}/{name}/redo")

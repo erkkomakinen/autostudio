@@ -49,6 +49,11 @@ def _generate(job_id: str, name: str, prompt: str | None, feedback_id: str | Non
         storage.update_image(job_id, name, status="done", error=None)
         if feedback_id:
             _feedback_done(feedback_id, job_id, name)
+    except pipeline.AiFailed as e:
+        # Kuva on edelleen kunnossa (edellinen versio), joten asiakkaalle se näkyy valmiina
+        storage.update_image(job_id, name, status="done", error=str(e))
+        if feedback_id:
+            storage.update_feedback(feedback_id, status="error", error=str(e))
     except Exception as e:  # noqa: BLE001
         _fail(job_id, name, e, feedback_id)
 

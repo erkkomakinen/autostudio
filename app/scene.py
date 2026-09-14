@@ -483,6 +483,8 @@ def render(
 
     guide = s["floor"] == "guide"  # tekoälylle annettava selkeä pohja: tasainen lattia + saumaviivat
     mat = load_material(s["floor_material"]) if s["floor"] == "material" else None
+    if mat is not None and s.get("material_overrides"):
+        mat = {**mat, "cfg": {**mat["cfg"], **s["material_overrides"]}}
     use_photo = s["floor"] == "texture" and floor_texture is not None and floor_texture.exists()
     if guide:
         albedo = np.full((lx.shape[0], 3), 150.0, np.float32)

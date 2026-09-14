@@ -29,7 +29,15 @@
         </div>
         <img id="viewerImg" alt="">
     </dialog>
-    <div id="toast" class="toast" role="status" hidden></div>
+    <dialog id="leave" class="confirm" aria-labelledby="leaveTitle" aria-describedby="leaveText">
+        <h2 id="leaveTitle">Tallentamattomia muutoksia</h2>
+        <p id="leaveText" class="muted">Jos poistut nyt, tekemäsi muutokset menetetään.</p>
+        <div class="row end">
+            <button type="button" class="btn ghost" data-leave>Poistu tallentamatta</button>
+            <button type="button" class="btn primary" data-stay autofocus>Jää sivulle</button>
+        </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
     <script src="/static/admin.js"></script>
 </body>
 </html>

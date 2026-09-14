@@ -1,3 +1,36 @@
+# Testaus 15.9.2026: UX-hionta ja laattakokeilu
+
+Palautuspiste ennen näitä muutoksia: git-tagi `v1-renkaiden-suunta`.
+
+| Osa-alue | Tarkistuksia | Tulos |
+|---|---|---|
+| UX-korjaukset selaimessa (null-tekstit, poistumisvaroitus, virheet, klikkaus alkuperäiseen, yhteystiedot) | 32 | kaikki läpi |
+| Uudet rajapinnat ja realismivalinta oikean ohjelmakoodin kautta, simuloitu tekoälykatkos | 11 | kaikki läpi |
+
+## Korjatut UX-puutteet
+- **"null" näkyi tekstinä** ylläpidon yleiskatsauksessa (kun hälytyksiä ei ollut) ja asiakkaan ilmoituksissa. Tyhjät osat jätetään nyt pois kaikissa näkymissä.
+- **Tallentamattomat muutokset**: yrityksen asetuksista, tyylieditorista, asetuksista ja uudelleenteko-ohjeista poistuttaessa kysytään "Jää sivulle / Poistu tallentamatta". Myös välilehden sulkeminen tai uudelleenlataus kysyy varmistuksen. Asiakkaalta kysytään varmistus, jos sivulta poistutaan kesken kuvien lähetyksen.
+- **Virheet näkyviin**: epäonnistunut tallennus tai toiminto näyttää punaisen ilmoituksen syineen. Painike lukittuu ajon ajaksi ("Tallennetaan…") ja vapautuu virheen jälkeen. Aiemmin osa virheistä jäi hiljaa näkymättömiin.
+- **Taustapäivitys pyyhki kirjoitetun tekstin**: erän sivu päivittyi 4 s välein ja kirjoitettu ohje katosi. Nyt päivitys odottaa, kunnes kirjoitus on valmis.
+- **Alkuperäinen kuva klikkaamalla** (asiakas): napautus vaihtaa alkuperäiseen ja takaisin, toimii myös näppäimistöllä. Alkuperäinen ladataan etukäteen, kun kuva tulee näkyviin.
+- Kuukausi näkyy osoitteessa (`#/kk/2026-08`), joten takaisin-painike ja linkin jakaminen toimivat. Välilehden otsikko kertoo näkymän.
+- Muistiinpano palautteeseen tallentuu automaattisesti. Aiemmin se tallentui vain kuitattaessa.
+- Linkin kopiointi toimii myös ilman HTTPS:ää (varakeino). Linkin uusimisen vahvistus peruuntuu 5 sekunnissa.
+- Tyylieditorissa logon tai lattian vaihto tallentaa ensin keskeneräiset säädöt, eikä niitä enää menetetä.
+- "Päivitä ulkoasu kaikkiin" toimii taustalla, joten isokaan erä ei aikakatkaise pyyntöä.
+- Epäonnistunut tekoäly korjauksessa ei enää tee uutta samannäköistä versiota: edellinen kuva säilyy ja virhe kirjataan.
+- Kuvakaton takia ilman tekoälyä tehdyt kuvat voi tehdä uudelleen yhdellä painikkeella yrityksen sivulta.
+- Asetuksiin lisättiin asiakkaille näkyvät yhteystiedot. Ne näkyvät kuvausohjeessa ja pois käytöstä -viestissä.
+
+## Laattakokeilu (Audi A4, etuviisto, sivu ja suoraan edestä)
+- **Etukuvan epäaitous ei johtunut laattojen suunnasta.** Analyysi ei löytänyt kuvasta pyöriä, joten laatat olivat jo kuvan suuntaiset. Syy oli valaistus: Gemini noudattaa ohjetta ja pitää lasketun pohjan valaistuksen, jolloin lattia jää tasaiseksi eikä heijastusta tai kosketusvarjoa synny.
+- **Laattojen suunta** (aina kuvan suuntaisesti) muutti etuviistokuvaa vain vähän, ja sivukuvassa ero oli olematon. Molemmat näyttivät uskottavilta.
+- **Realismiohje** (tekoäly tekee kiillotetun kiven heijastuksen ja kosketusvarjon, auto, saumat ja lattiaraja pysyvät lukittuina) paransi selvästi kaikkia kulmia ja eniten etukuvaa. Aika ja hinta pysyivät samoina (≈ 10 s, 0,06 €).
+- **Pelkkä pohjakuvan säätö** (vahvempi heijastus ja varjo, ohje lukittuna) ei riittänyt.
+- Molemmat ovat nyt tyylin valintoja: *Laattojen suunta* (auton suuntaan / kuvan suuntaisesti) ja *Tekoälyn viimeistely* (Lukittu / Realistinen). Oletus on nykyinen (auton suunta, lukittu). Realistinen-valinta ottaa käyttöön myös kokeilun pohja-asetukset (`REALISM_BASE` tiedostossa `ai_background.py`).
+- Havainto: realismitilassa rekisterikilpi voi heijastua lattiaan peilikuvana. Tämä on fysikaalisesti oikein kiiltävällä lattialla, mutta kannattaa katsoa, sopiiko se tyyliin.
+- Kokeilun kulut 0,53 € ja integraatiotestin esikatselu 0,06 €.
+
 # Testaus 14.9.2026
 
 Kaikki toiminnot testattiin rajapinnan kautta (Python-skripti) ja käyttöliittymästä (Playwright, Chromium:

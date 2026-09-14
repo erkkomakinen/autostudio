@@ -84,6 +84,29 @@ def prompt_for_base_with_samples(style: dict) -> str:
     )
 
 
+def prompt_for_realism_with_samples(style: dict) -> str:
+    """Kuten prompt_for_base_with_samples, mutta tekoäly saa tehdä valaistuksesta aidon: kiillotetun kiven
+    heijastuksen ja kosketusvarjon auton alle. Rakenne (auto, saumat, lattiaraja) pysyy lukittuna."""
+    return (
+        "Image 1 is a draft photo of a car in a car dealership studio. Image 2 is a real photographed close-up of the "
+        "polished granite floor surface as it must look in the final photo. Image 3 is the wall surface as it must "
+        "look in the final photo. Turn image 1 into a real, high-end dealership photograph shot with a real camera. "
+        "LOCKED, do not change: the camera framing and zoom; the car, its position, size, shape and every detail, never "
+        "add, remove or complete anything on the car (no wheels or parts that are not visible in image 1); the "
+        "position, direction and perspective of every grout line and the tile size; the line where the floor meets "
+        "the wall. Do not zoom, crop or move anything. "
+        "MAKE IT REAL: the floor tiles must look exactly like the real stone in image 2 (same grain size, speckle and "
+        "polished sheen), with thin light grout lines exactly where they are in image 1. Light the scene like a real "
+        "studio: the polished floor shows a soft, blurred mirror reflection of the car directly below it that fades "
+        "within a short distance, a soft dark contact shadow directly under the car body and bumpers so the car "
+        "clearly stands on the floor, and natural gentle light falloff towards the edges of the photo. The floor keeps "
+        "its overall grey tone. SHADOWS ONLY AT THE VEHICLE: no other shadows, dark areas or light streaks anywhere. "
+        "The wall must look exactly like image 3: one continuous plain neutral dark charcoal surface going straight "
+        "down to the floor line, no skirting board, strip, border or ledge. No objects, no second car, no text, no "
+        "logos, no people."
+    )
+
+
 def prompt_for_base(style: dict) -> str:
     """Pohjakuvatila: kuva on jo lähes valmis, tekoäly tekee vain valokuvamaisen viimeistelyn."""
     return (
@@ -101,16 +124,26 @@ def prompt_for_base(style: dict) -> str:
     )
 
 
+# Realismitilan pohjakuva (testattu 15.9.2026): selvempi kosketusvarjo, kiilto ja auton heijastus,
+# jotta tekoäly tunnistaa lattian kiillotetuksi kiveksi ja auto seisoo lattialla
+REALISM_BASE = {"car_reflection": 0.6, "reflection_blur_px": 4, "gloss": 0.3, "light_intensity": 450, "brightness": 150}
+REALISM_SHADOW = 0.8
+
+
 def guide_settings(style: dict, car_height_m: float) -> dict:
     W, H = style["canvas"]
+    realism = style.get("finish_prompt") == "realism"
     if style.get("guide_mode") == "base":
         return {
+            "material_overrides": REALISM_BASE if realism else {},
             "width": W, "height": H, "layout": "center",
             "car_width": style["car_width"], "car_height": style["car_height"], "floor_y": style["floor_y"],
             "background_mode": "studio3d", "floor": "material", "floor_material": style["base_material"],
-            "shadow": float(style.get("base_shadow", 0.5)), "car_height_m": car_height_m,
+            "shadow": REALISM_SHADOW if realism else float(style.get("base_shadow", 0.5)), "car_height_m": car_height_m,
             "wall_distance": 6.0, "wall_brightness": float(style.get("base_wall_brightness", 24)),
-            "align_to_car": 1, "use_roll": 0, "logo": "", "window_transparency": 1.0, "window_tint": 0.0,
+            # tile_direction: car = saumat pyörien suuntaan (oletus), camera = saumat aina kuvan suuntaisesti
+            "align_to_car": 0 if style.get("tile_direction") == "camera" else 1,
+            "use_roll": 0, "logo": "", "window_transparency": 1.0, "window_tint": 0.0,
         }
     return {
         "width": W, "height": H, "layout": "center",
@@ -141,7 +174,8 @@ def request_background(guide: Image.Image, style: dict, timeout: int = 400, extr
     if style.get("guide_mode") == "base" and style.get("finish_floor_sample") and style.get("use_finish_samples", True):
         refs = [guide, Image.open(style["dir"] / style["finish_floor_sample"]),
                 Image.open(style["dir"] / style["finish_wall_sample"])]
-        prompt = prompt_for_base_with_samples(style)
+        # finish_prompt: locked = pinnat valokuvamaisiksi, valaistus pohjasta (oletus); realism = heijastus ja varjo tekoälyltä
+        prompt = (prompt_for_realism_with_samples if style.get("finish_prompt") == "realism" else prompt_for_base_with_samples)(style)
     elif style.get("guide_mode") == "base":
         refs, prompt = [guide], prompt_for_base(style)
     else:
